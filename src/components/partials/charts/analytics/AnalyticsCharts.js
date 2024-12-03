@@ -368,7 +368,7 @@ export const Map = ({ set }) => {
           regions: [
             {
               values: set === "30" ? worldMap.data2 : set === "7" ? worldMap.data3 : worldMap.data4,
-              scale: ["#ccd7e2", "#798bff"],
+              scale: ["#ccd7e2", "#0069FF"],
               normalizeFunction: "polynomial",
             },
           ],

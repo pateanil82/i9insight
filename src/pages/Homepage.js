@@ -126,35 +126,35 @@ const Homepage = () => {
         </BlockHead>
         <Block>
           <Row className="g-gs">
-            <Col xxl="4">
+            <Col md="6" xxl="4">
               <PreviewAltCard className="h-100">
                 <h6 className="title">Sales Overview</h6>
                 <p>In 30 days sales of product subscription.</p>  
                 <SalesOverview />
               </PreviewAltCard>
             </Col>
-            <Col xxl="4">
+            <Col md="6" xxl="4">
               <PreviewCard className="h-100">
                 <h6 className="title">Orders Overview</h6>
                 <p>In last days buy and sells overview.</p>
                 <OrderOverview />
               </PreviewCard>
             </Col>
-            <Col xxl="4">
+            <Col md="6" xxl="4">
               <PreviewCard className="h-100">
                 <h6 className="title">User Activities</h6>
                 <p> Data of last 15 days is shown in given graph.</p>
                 <UserActivity />
               </PreviewCard>
             </Col>
-            <Col xxl="4">
+            <Col md="6" xxl="4">
               <PreviewCard className="h-100">
                 <h6 className="title">Traffic Channel</h6>
                 <p>In last 15 days buy and sells overview.</p>
                 <TrafficDougnut />
               </PreviewCard>
             </Col>
-            <Col xxl="4">
+            <Col md="6" xxl="4">
               <PreviewCard className="h-100">
                 <div style={{ height: "250px" }}>
                   <h6 className="title">Trend Intersection</h6>
@@ -163,7 +163,7 @@ const Homepage = () => {
                 </div>
               </PreviewCard>
             </Col>
-            <Col xxl="4">
+            <Col md="6"  xxl="4">
               <PreviewCard className="h-100">
                 <h6 className="title">Active Users</h6>
                 <p>How do your users visited in the time.</p>

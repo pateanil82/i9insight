@@ -86,17 +86,17 @@ export const salesOverview = {
   datasets: [
     {
       label: "Sales Overview",
-      color: "#798bff",
+      color: "#0069FF",
       fill: true,
       backgroundColor: "rgba(101,118,255,0.25)",
-      borderColor: "#798bff",
+      borderColor: "#0069FF",
       barPercentage: 0.1,
       categoryPercentage: 0.1,
       borderWidth: 2,
       lineTension: 0.1,
       pointBorderColor: "transparent",
       pointBackgroundColor: "transparent",
-      pointHoverBorderColor: "#798bff",
+      pointHoverBorderColor: "#0069FF",
       pointHoverBackgroundColor: "#fff",
       data: [
         8200, 7800, 9500, 5500, 9200, 9690, 8200, 7800, 9500, 5500, 9200, 9690, 8200, 7800, 9500, 5500, 9200, 9690,

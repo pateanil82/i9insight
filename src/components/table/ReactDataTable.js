@@ -98,7 +98,10 @@ const ReactDataTable = ({ data, columns, pagination, actions, className, selecta
   const [searchText, setSearchText] = useState("");
   const [rowsPerPageS, setRowsPerPage] = useState(10);
   const [mobileView, setMobileView] = useState();
-
+  console.log("data, columns", data, columns)
+  useEffect(()=> {
+    setTableData(data);
+  },[data]);
   useEffect(() => {
     let defaultData = tableData;
     if (searchText !== "") {
@@ -109,9 +112,8 @@ const ReactDataTable = ({ data, columns, pagination, actions, className, selecta
     } else {
       setTableData(data);
     }
-  }, [searchText]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchText]);
 
-  // function to change the design view under 1200 px
   const viewChange = () => {
     if (window.innerWidth < 960 && expandableRows) {
       setMobileView(true);
@@ -129,9 +131,9 @@ const ReactDataTable = ({ data, columns, pagination, actions, className, selecta
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className={`dataTables_wrapper dt-bootstrap4 no-footer ${className ? className : ""}`}>
+    <div className={`dataTables_wrapper dt-bootstrap4 no-footer mt-3 ${className ? className : ""}`}>
       <Row className={`justify-between g-2 ${actions ? "with-export" : ""}`}>
-        <Col className="col-7 text-start" sm="4">
+        {/* <Col className="col-7 text-start" sm="4">
           <div id="DataTables_Table_0_filter" className="dataTables_filter">
             <label>
               <input
@@ -142,11 +144,11 @@ const ReactDataTable = ({ data, columns, pagination, actions, className, selecta
               />
             </label>
           </div>
-        </Col>
-        <Col className="col-5 text-end" sm="8">
+        </Col> */}
+        <Col className="col-12 text-end" sm="12">
           <div className="datatable-filter">
             <div className="d-flex justify-content-end g-2">
-              {actions && <Export data={data} />}
+              {actions && <Export data={tableData} />}
               <div className="dataTables_length" id="DataTables_Table_0_length">
                 <label>
                   <span className="d-none d-sm-inline-block">Show</span>

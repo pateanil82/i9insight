@@ -827,7 +827,7 @@ const TrafficDougnut = () => {
         <div className="traffic-channel-group g-2">
           <div className="traffic-channel-data">
             <div className="title">
-              <span className="dot dot-lg sq" style={{ background: "#798bff" }}></span>
+              <span className="dot dot-lg sq" style={{ background: "#0069FF" }}></span>
               <span>Organic Search</span>
             </div>
             <div className="amount">
@@ -952,7 +952,7 @@ const SessionDevice = () => {
         </div>
         <div className="device-status-group">
           <div className="device-status-data">
-            <Icon style={{ color: "#798bff" }} name="monitor"></Icon>
+            <Icon style={{ color: "#0069FF" }} name="monitor"></Icon>
             <div className="title">Desktop</div>
             <div className="amount"> {sessionDevice === "7" ? "50.5" : sessionDevice === "15" ? "70.5" : "84.5"}%</div>
             <div className="change up text-danger">

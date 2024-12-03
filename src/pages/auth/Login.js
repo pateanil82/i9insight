@@ -16,31 +16,36 @@ import {
 import { Form, Spinner, Alert } from "reactstrap";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { login, setUserName, token } from "../../services/authServices";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const [passState, setPassState] = useState(false);
   const [errorVal, setError] = useState("");
 
-  const onFormSubmit = (formData) => {
+  const navigate = useNavigate();
+
+  const onFormSubmit = async (formData) => {
     setLoading(true);
-    const loginName = "info@softnio.com";
-    const pass = "123456";
-    if (formData.name === loginName && formData.passcode === pass) {
-      localStorage.setItem("accessToken", "token");
-      setTimeout(() => {
-        window.history.pushState(
-          `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`,
-          "login",
-          `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`
-        );
-        window.location.reload();
-      }, 1000);
-    } else {
-      setTimeout(() => {
-        setError("Cannot login with credentials");
-        setLoading(false);
-      }, 1000);
+    const data = new URLSearchParams({
+      grant_type: "password",
+      username: formData.name,
+      password: formData.passcode,
+      scope: "",
+      client_id: "string",
+      client_secret: "string",
+    });
+
+    try {
+      const response = await token(data);
+      if (response.statusCode === 200) {
+        const responseLogin = await login();
+        setUserName(responseLogin.data)
+        navigate("/");
+      }
+    } catch (error) {
+      console.log("console_error", error);
     }
   };
 
@@ -92,7 +97,7 @@ const Login = () => {
             <div className="form-group">
               <div className="form-label-group">
                 <label className="form-label" htmlFor="default-01">
-                  Email or Username
+                  Username
                 </label>
               </div>
               <div className="form-control-wrap">
@@ -100,8 +105,8 @@ const Login = () => {
                   type="text"
                   id="default-01"
                   {...register("name", { required: "This field is required" })}
-                  defaultValue="info@softnio.com"
-                  placeholder="Enter your email address or username"
+                  defaultValue="demo-admin"
+                  placeholder="Enter your username"
                   className="form-control-lg form-control"
                 />
                 {errors.name && <span className="invalid">{errors.name.message}</span>}
@@ -133,7 +138,7 @@ const Login = () => {
                   type={passState ? "text" : "password"}
                   id="password"
                   {...register("passcode", { required: "This field is required" })}
-                  defaultValue="123456"
+                  defaultValue="i9demo@123"
                   placeholder="Enter your passcode"
                   className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}
                 />

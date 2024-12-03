@@ -65,7 +65,7 @@ const Faq = ({ ...props }) => {
                     <rect width="20" height="12" x="38" y="60" fill="#e5effe" rx="1" ry="1"></rect>
                     <rect width="20" height="12" x="62" y="60" fill="#e5effe" rx="1" ry="1"></rect>
                     <path
-                      fill="#798bff"
+                      fill="#0069FF"
                       d="M98 31H22a5.006 5.006 0 00-5 5v42a5.006 5.006 0 005 5h30v8h-7a2 2 0 00-2 2v4a2 2 0 002 2h28a2 2 0 002-2v-4a2 2 0 00-2-2h-7v-8h32a5.006 5.006 0 005-5V36a5.006 5.006 0 00-5-5zM73 93v4H45v-4zm-9-2H54v-8h10zm37-13a3 3 0 01-3 3H22a3 3 0 01-3-3V36a3 3 0 013-3h76a3 3 0 013 3z"
                     ></path>
                     <path

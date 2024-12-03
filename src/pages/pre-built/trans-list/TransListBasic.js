@@ -32,7 +32,7 @@ import { statusOptions, transData } from "./TransData";
 import { dateFormatterAlt } from "../../../utils/Utils";
 import { useForm } from "react-hook-form";
 
-const TransListBasic = () => {
+const TransListBasic = ({title}) => {
   const [onSearch, setonSearch] = useState(true);
   const [onSearchText, setSearchText] = useState("");
   const [modal, setModal] = useState({
@@ -142,10 +142,10 @@ const TransListBasic = () => {
   return <>
     <Head title="Transaction Lists - Basic"></Head>
     <Content>
-      <BlockHead size="sm">
+      {!title && <BlockHead size="sm">
         <BlockBetween>
           <BlockHeadContent>
-            <BlockTitle page>Transaction History</BlockTitle>
+            <BlockTitle page>{ "Transaction History"}</BlockTitle>
             <BlockDes className="text-soft">
               {/* <p>You have total 937 orders.</p> */}
             </BlockDes>
@@ -160,7 +160,7 @@ const TransListBasic = () => {
             </ul>
           </BlockHeadContent> */}
         </BlockBetween>
-      </BlockHead>
+      </BlockHead>}
 
       <Block>
         <Card className="card-bordered card-stretch">
@@ -168,7 +168,7 @@ const TransListBasic = () => {
             <div className="card-inner">
               <div className="card-title-group">
                 <div className="card-title">
-                  <h5 className="title">All Orders</h5>
+                  <h5 className="title">{title || "All Orders"}</h5>
                 </div>
                 <div className="card-tools me-n1">
                   <ul className="btn-toolbar">

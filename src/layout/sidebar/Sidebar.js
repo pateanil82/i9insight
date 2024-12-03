@@ -24,7 +24,7 @@ const Sidebar = ({ fixed, className, ...props }) => {
     "nk-sidebar-mobile": theme.sidebarMobile,
     "is-compact": theme.sidebarCompact,
     "has-hover": theme.sidebarCompact && mouseEnter,
-    [`is-light`]: theme.sidebar === "red",
+    [`is-light`]: theme.sidebar === "white",
     [`is-${theme.sidebar}`]: theme.sidebar !== "white" && theme.sidebar !== "light",
     [`${className}`]: className,
   });

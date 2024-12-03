@@ -4,6 +4,7 @@ import { DropdownToggle, DropdownMenu, Dropdown } from "reactstrap";
 import { Icon } from "../../../../components/Component";
 import { LinkList, LinkItem } from "../../../../components/links/Links";
 import { useTheme, useThemeUpdate } from "../../../provider/Theme";
+import { getUserName } from "../../../../services/authServices";
 
 const User = () => {
   const theme = useTheme();
@@ -25,7 +26,7 @@ const User = () => {
           <UserAvatar icon="user-alt" className="sm" />
           <div className="user-info d-none d-md-block">
             <div className="user-status">Administrator</div>
-            <div className="user-name dropdown-indicator">Abu Bin Ishityak</div>
+            <div className="user-name dropdown-indicator">{getUserName()}</div>
           </div>
         </div>
       </DropdownToggle>
@@ -36,8 +37,8 @@ const User = () => {
               <span>AB</span>
             </div>
             <div className="user-info">
-              <span className="lead-text">Abu Bin Ishtiyak</span>
-              <span className="sub-text">info@softnio.com</span>
+              <span className="lead-text">{getUserName()}</span>
+              {/* <span className="sub-text">info@softnio.com</span> */}
             </div>
           </div>
         </div>
@@ -53,23 +54,32 @@ const User = () => {
               Login Activity
             </LinkItem> */}
             <li>
-              <a className={`dark-switch ${theme.skin === 'dark' ? 'active' : ''}`} href="#" 
-              onClick={(ev) => {
-                ev.preventDefault();
-                themeUpdate.skin(theme.skin === 'dark' ? 'light' : 'dark');
-              }}>
-                {theme.skin === 'dark' ? 
-                  <><em className="icon ni ni-sun"></em><span>Light Mode</span></> 
-                  : 
-                  <><em className="icon ni ni-moon"></em><span>Dark Mode</span></>
-                }
+              <a
+                className={`dark-switch ${theme.skin === "dark" ? "active" : ""}`}
+                href="#"
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  themeUpdate.skin(theme.skin === "dark" ? "light" : "dark");
+                }}
+              >
+                {theme.skin === "dark" ? (
+                  <>
+                    <em className="icon ni ni-sun"></em>
+                    <span>Light Mode</span>
+                  </>
+                ) : (
+                  <>
+                    <em className="icon ni ni-moon"></em>
+                    <span>Dark Mode</span>
+                  </>
+                )}
               </a>
             </li>
           </LinkList>
         </div>
         <div className="dropdown-inner">
           <LinkList>
-            <a href={`${process.env.PUBLIC_URL}/login`}>
+            <a href={`${process.env.PUBLIC_URL}/login`} onClick={() => localStorage.clear()}>
               <Icon name="signout"></Icon>
               <span>Sign Out</span>
             </a>

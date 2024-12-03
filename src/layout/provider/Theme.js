@@ -16,11 +16,11 @@ const ThemeProvider = ({...props}) => {
   
   const defaultTheme = {
     main: "default", //other value can be passed "clean,shady,softy"
-    sidebar: "light", //other value can be passed "light,white,theme"
+    sidebar: "white", //other value can be passed "light,white,theme"
     sidebarCompact: false,
     sidebarVisibility: false,
     sidebarMobile: false,
-    header: "light", //other value can be passed "light,dark,theme"
+    header: "white", //other value can be passed "light,dark,theme"
     skin: "light", //other value can be passed "dark"
   }
     const [theme, setTheme] = useState(defaultTheme);
