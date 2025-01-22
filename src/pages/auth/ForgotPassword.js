@@ -1,8 +1,6 @@
 import React from "react";
 import Logo from "../../assets/images/logo.jpg";
-import LogoDark from "../../images/logo-dark.png";
 import Head from "../../layout/head/Head";
-import AuthFooter from "./AuthFooter";
 import { Block, BlockContent, BlockDes, BlockHead, BlockTitle, Button, PreviewCard } from "../../components/Component";
 import { Link } from "react-router-dom";
 
@@ -13,8 +11,6 @@ const ForgotPassword = () => {
       <Block className="nk-block-middle nk-auth-body  wide-xs">
         <div className="brand-logo pb-4 text-center">
           <Link to={process.env.PUBLIC_URL + "/"} className="logo-link">
-            {/* <img className="logo-light logo-img logo-img-lg" src={Logo} alt="logo" />
-              <img className="logo-dark logo-img logo-img-lg" src={LogoDark} alt="logo-dark" /> */}
             <img className="logo-dark logo-img logo-img-lg" style={{ maxHeight: "80px" }} src={Logo} alt="logo" />
           </Link>
           <div
@@ -65,7 +61,6 @@ const ForgotPassword = () => {
           </div>
         </PreviewCard>
       </Block>
-      {/* <AuthFooter /> */}
     </>
   );
 };

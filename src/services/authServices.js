@@ -23,6 +23,8 @@ const handleError = (error) => {
   if (errorMessage === "Could not validate credentials") {
     localStorage.clear();
     window.location.href = "/";
+  } else if (errorMessage) {
+    plainErrorMessage = errorMessage;
   } else {
     console.error("Error message is undefined");
     plainErrorMessage = "An error occurred";
@@ -42,7 +44,7 @@ export const token = async (payload) => {
     setAccessToken(response.data.access_token);
     return { statusCode: response.status, successMessage: "Login successful", data: response.data };
   } catch (error) {
-    console.log("console_error", error);
+    console.log("console_error__1", error);
     return handleError(error);
   }
 };

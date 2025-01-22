@@ -5,16 +5,16 @@ import CopyToClipboard from "react-copy-to-clipboard";
 import { Col, Modal, ModalBody, Row, Button } from "reactstrap";
 import { DataTablePagination } from "../Component";
 
-const Export = ({ data }) => {
+const Export = ({ data, exportName }) => {
   const [modal, setModal] = useState(false);
-
+  console.log("exportName", exportName);
   useEffect(() => {
     if (modal === true) {
       setTimeout(() => setModal(false), 2000);
     }
   }, [modal]);
 
-  const fileName = "user-data";
+  const fileName = `${exportName.reportName}-${exportName.selectedEntityType}-${exportName.startDate}-${exportName.endDate}`;
 
   const exportCSV = () => {
     const exportType = exportFromJSON.types.csv;
@@ -36,14 +36,34 @@ const Export = ({ data }) => {
         <div className="dt-export-title d-none d-md-inline-block">Export</div>
         <div className="dt-buttons btn-group flex-wrap">
           <CopyToClipboard text={JSON.stringify(data)}>
-            <Button className="buttons-copy buttons-html5" onClick={() => copyToClipboard()}>
+            <Button
+              className="buttons-copy buttons-html5"
+              onClick={() => copyToClipboard()}
+              data-bs-toggle="tooltip"
+              data-bs-placement="bottom"
+              title="Copy to clipboard"
+            >
               <span>Copy</span>
             </Button>
           </CopyToClipboard>{" "}
-          <button className="btn btn-secondary buttons-csv buttons-html5" type="button" onClick={() => exportCSV()}>
+          <button
+            className="btn btn-secondary buttons-csv buttons-html5"
+            type="button"
+            onClick={() => exportCSV()}
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            title="Export with CSV"
+          >
             <span>CSV</span>
           </button>{" "}
-          <button className="btn btn-secondary buttons-excel buttons-html5" type="button" onClick={() => exportExcel()}>
+          <button
+            className="btn btn-secondary buttons-excel buttons-html5"
+            type="button"
+            onClick={() => exportExcel()}
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            title="Export with Excel"
+          >
             <span>Excel</span>
           </button>{" "}
         </div>
@@ -81,32 +101,34 @@ const ExpandableRowComponent = ({ data }) => {
 
 const CustomCheckbox = React.forwardRef(({ onClick, ...rest }, ref) => (
   <div className="custom-control custom-control-sm custom-checkbox notext">
-    <input
-      id={rest.name}
-      type="checkbox"
-      className="custom-control-input"
-      ref={ref}
-      onClick={onClick}
-      {...rest}
-    />
+    <input id={rest.name} type="checkbox" className="custom-control-input" ref={ref} onClick={onClick} {...rest} />
     <label className="custom-control-label" htmlFor={rest.name} />
   </div>
 ));
 
-const ReactDataTable = ({ data, columns, pagination, actions, className, selectableRows, expandableRows }) => {
+const ReactDataTable = ({
+  data,
+  columns,
+  pagination,
+  actions,
+  className,
+  selectableRows,
+  expandableRows,
+  exportName,
+  exportData
+}) => {
   const [tableData, setTableData] = useState(data);
   const [searchText, setSearchText] = useState("");
-  const [rowsPerPageS, setRowsPerPage] = useState(10);
   const [mobileView, setMobileView] = useState();
-  console.log("data, columns", data, columns)
-  useEffect(()=> {
+  console.log("data, columns", data, columns);
+  useEffect(() => {
     setTableData(data);
-  },[data]);
+  }, [data]);
   useEffect(() => {
     let defaultData = tableData;
     if (searchText !== "") {
       defaultData = data.filter((item) => {
-        return item.name.toLowerCase().includes(searchText.toLowerCase());
+        return item.Child_Name.toLowerCase().includes(searchText.toLowerCase());
       });
       setTableData(defaultData);
     } else {
@@ -133,41 +155,22 @@ const ReactDataTable = ({ data, columns, pagination, actions, className, selecta
   return (
     <div className={`dataTables_wrapper dt-bootstrap4 no-footer mt-3 ${className ? className : ""}`}>
       <Row className={`justify-between g-2 ${actions ? "with-export" : ""}`}>
-        {/* <Col className="col-7 text-start" sm="4">
+        <Col className="col-7 text-start" sm="12" md="6">
           <div id="DataTables_Table_0_filter" className="dataTables_filter">
             <label>
               <input
                 type="search"
                 className="form-control form-control-sm"
-                placeholder="Search by name"
+                placeholder="Search by Customer Name"
                 onChange={(ev) => setSearchText(ev.target.value)}
               />
             </label>
           </div>
-        </Col> */}
-        <Col className="col-12 text-end" sm="12">
+        </Col>
+        <Col className="col-5 text-end" sm="12" md="6">
           <div className="datatable-filter">
             <div className="d-flex justify-content-end g-2">
-              {actions && <Export data={tableData} />}
-              <div className="dataTables_length" id="DataTables_Table_0_length">
-                <label>
-                  <span className="d-none d-sm-inline-block">Show</span>
-                  <div className="form-control-select">
-                    {" "}
-                    <select
-                      name="DataTables_Table_0_length"
-                      className="custom-select custom-select-sm form-control form-control-sm"
-                      onChange={(e) => setRowsPerPage(e.target.value)}
-                      value={rowsPerPageS}
-                    >
-                      <option value="10">10</option>
-                      <option value="25">25</option>
-                      <option value="40">40</option>
-                      <option value="50">50</option>
-                    </select>{" "}
-                  </div>
-                </label>
-              </div>
+              {actions && <Export data={exportData} exportName={exportName} />}
             </div>
           </div>
         </Col>
@@ -181,22 +184,20 @@ const ReactDataTable = ({ data, columns, pagination, actions, className, selecta
         expandableRowsComponent={ExpandableRowComponent}
         expandableRows={mobileView}
         noDataComponent={<div className="p-2">There are no records found</div>}
-        sortIcon={
-          <div>
-            <span>&darr;</span>
-            <span>&uarr;</span>
-          </div>
-        }
+        // sortIcon={
+        //   <div>
+        //     <span>&darr;</span>
+        //     <span>&uarr;</span>
+        //   </div>
+        // }
         pagination={pagination}
         paginationComponent={({ currentPage, rowsPerPage, rowCount, onChangePage, onChangeRowsPerPage }) => (
           <DataTablePagination
-            customItemPerPage={rowsPerPageS}
             itemPerPage={rowsPerPage}
             totalItems={rowCount}
             paginate={onChangePage}
             currentPage={currentPage}
             onChangeRowsPerPage={onChangeRowsPerPage}
-            setRowsPerPage={setRowsPerPage}
           />
         )}
       ></DataTable>

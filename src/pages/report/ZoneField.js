@@ -28,7 +28,6 @@ const ZoneField = ({ fieldName, setFieldValue }) => {
     }
   }, [zoneId]);
 
-  // Helper function to update nested children in zoneData
   const updateNestedZoneData = (zones, zoneId, newChildren) => {
     return zones.map((zoneItem) => {
       if (zoneItem.zone_id === zoneId) {
@@ -41,12 +40,10 @@ const ZoneField = ({ fieldName, setFieldValue }) => {
     });
   };
 
-  // Function to fetch children for a specific zone
   const fetchChildren = async (zone) => {
     try {
       const response = await getZoneHierarchy(zone.zone_id);
       if (response.statusCode === 200) {
-        // Update children for the clicked zone
         setZoneData((prevState) => updateNestedZoneData(prevState, zone.zone_id, response.data));
       }
     } catch (error) {
@@ -54,34 +51,27 @@ const ZoneField = ({ fieldName, setFieldValue }) => {
     }
   };
 
-  // Toggle accordion for a specific zone
   const toggleAcc = async (zone) => {
     const zone_id = zone.zone_id;
-
     if (openAccordion[zone_id]) {
-      // If already open, close it
       setOpenAccordion((prevState) => {
         const newState = { ...prevState };
         delete newState[zone_id];
         return newState;
       });
     } else {
-      // Otherwise, open it and fetch children if not already fetched
       setOpenAccordion((prevState) => {
         const newState = { ...prevState };
         newState[zone_id] = true;
         return newState;
       });
-
-      // Check if children already exist, if not, fetch them
       const zoneWithChildren = zoneData.find((zoneItem) => zoneItem.zone_id === zone_id);
       if (!zoneWithChildren?.children) {
-        await fetchChildren(zone); // Fetch children for the clicked zone
+        await fetchChildren(zone);
       }
     }
   };
 
-  // Recursive function to render nested accordions
   const renderNestedAccordion = (zones) => {
     return (
       <div className="accordion">
@@ -104,7 +94,7 @@ const ZoneField = ({ fieldName, setFieldValue }) => {
                 className={`accordion-head ${openAccordion[item.zone_id] ? "" : "collapsed"}`}
                 style={{ cursor: "pointer" }}
                 onClick={() => {
-                  toggleAcc(item); // Toggle the accordion for this item
+                  toggleAcc(item);
                   setZoneId(item.zone_id);
                 }}
               >
@@ -120,7 +110,6 @@ const ZoneField = ({ fieldName, setFieldValue }) => {
       </div>
     );
   };
-
 
   return (
     <React.StrictMode>
@@ -147,7 +136,7 @@ const ZoneField = ({ fieldName, setFieldValue }) => {
                       className={`accordion-head ${openAccordion[item.zone_id] ? "" : "collapsed"}`}
                       style={{ cursor: "pointer" }}
                       onClick={() => {
-                        toggleAcc(item); // Toggle the accordion for this item
+                        toggleAcc(item);
                         setZoneId(item.zone_id);
                       }}
                     >

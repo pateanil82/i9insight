@@ -1,19 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import Head from "../layout/head/Head";
 import Content from "../layout/content/Content";
-import SaleRevenue from "../components/partials/default/sale-revenue/SaleRevenue";
-import ActiveSubscription from "../components/partials/default/active-subscription/ActiveSubscription";
-import AvgSubscription from "../components/partials/default/avg-subscription/AvgSubscription";
-import SalesOverview from "../components/partials/default/sales-overview/SalesOverview";
-import TransactionTable from "../components/partials/default/transaction/Transaction";
-import RecentActivity from "../components/partials/default/recent-activity/Activity";
-import NewsUsers from "../components/partials/default/new-users/User";
-import Support from "../components/partials/default/support-request/Support";
-import Notifications from "../components/partials/default/notification/Notification";
-import { DropdownToggle, DropdownMenu, Card, UncontrolledDropdown, DropdownItem } from "reactstrap";
 import {
   Block,
-  BlockDes,
   BlockHead,
   BlockHeadContent,
   BlockTitle,
@@ -28,18 +17,287 @@ import {
   LineChartExample,
   BarChartExample,
 } from "../components/Component";
-import TransListBasic from "./pre-built/trans-list/TransListBasic";
-import { DoubleBar, StackedBarChart } from "../components/partials/charts/default/Charts";
-import { PieController } from "chart.js";
-import { saleRevenue } from "../components/partials/charts/default/Data";
-import { barChartData, barChartStacked, doughnutChartData, solidLineChart } from "./components/charts/ChartData";
-import OrderOverview from "../components/partials/crypto/order-overview/OrderOverview";
-import UserActivity from "../components/partials/crypto/user-activity/UserActivity";
-import TrafficDougnut from "../components/partials/analytics/traffic-dougnut/TrafficDoughnut";
-import ActiveUser from "../components/partials/analytics/active-user/ActiveUser";
+import { AppContext } from "../context/appContext";
 
 const Homepage = () => {
-  const [sm, updateSm] = useState(false);
+  const [sm, updateSm] = useState(true);
+  const { chartData } = useContext(AppContext);
+
+  const firstChartData = useMemo(() => {
+    const data = chartData["1"]?.slot_data;
+    const chartDataNew = data?.reduce((acc, { month, sale_amt }) => {
+      const monthYear = month;
+      if (acc[monthYear]) {
+        acc[monthYear] += sale_amt;
+      } else {
+        acc[monthYear] = sale_amt;
+      }
+      return acc;
+    }, {});
+
+    const sortedData =
+      chartDataNew &&
+      Object.fromEntries(
+        Object.entries(chartDataNew)?.sort(([dateA], [dateB]) => {
+          // Parse the dates in "MM-YYYY" format
+          const [monthA, yearA] = dateA.split("-").map(Number);
+          const [monthB, yearB] = dateB.split("-").map(Number);
+          const dateObjA = new Date(yearA, monthA - 1); // JS months are 0-indexed
+          const dateObjB = new Date(yearB, monthB - 1);
+          return dateObjA - dateObjB;
+        })
+      );
+    return {
+      data: {
+        labels: sortedData && Object.keys(sortedData),
+        dataUnit: "BTC",
+        datasets: [
+          {
+            label: chartData["1"]?.title,
+            color: "#0069FF",
+            fill: true,
+            backgroundColor: "rgba(26, 120, 255,0.25)",
+            borderColor: "#0069FF",
+            barPercentage: 0.1,
+            categoryPercentage: 0.1,
+            borderWidth: 2,
+            lineTension: 0.1,
+            pointBorderColor: "transparent",
+            pointBackgroundColor: "transparent",
+            pointHoverBorderColor: "#0069FF",
+            pointHoverBackgroundColor: "#fff",
+            data: sortedData && Object.values(sortedData),
+          },
+        ],
+      },
+    };
+  }, [chartData]);
+
+  const secondChartData = useMemo(() => {
+    const data = chartData["2"]?.slot_data;
+    const chartDataNew = data?.reduce((acc, { month, sale_amt }) => {
+      const monthYear = month;
+      if (acc[monthYear]) {
+        acc[monthYear] += sale_amt;
+      } else {
+        acc[monthYear] = sale_amt;
+      }
+      return acc;
+    }, {});
+
+    const sortedData =
+      chartDataNew &&
+      Object.fromEntries(
+        Object.entries(chartDataNew)?.sort(([dateA], [dateB]) => {
+          // Parse the dates in "MM-YYYY" format
+          const [monthA, yearA] = dateA.split("-").map(Number);
+          const [monthB, yearB] = dateB.split("-").map(Number);
+          const dateObjA = new Date(yearA, monthA - 1); // JS months are 0-indexed
+          const dateObjB = new Date(yearB, monthB - 1);
+          return dateObjA - dateObjB;
+        })
+      );
+    return {
+      data: {
+        labels: sortedData && Object.keys(sortedData),
+        // dataUnit: "USD",
+        datasets: [
+          {
+            label: chartData["2"]?.title,
+            color: "#8feac5",
+            backgroundColor: "rgba(143, 234, 197, .25)",
+            borderColor: "#8feac5",
+            pointHoverBorderColor: "#8feac5",
+            fill: true,
+            barPercentage: 0.1,
+            categoryPercentage: 0.1,
+            borderWidth: 2,
+            lineTension: 0.1,
+            pointBorderColor: "transparent",
+            pointBackgroundColor: "transparent",
+            pointHoverBackgroundColor: "#fff",
+            data: sortedData && Object.values(sortedData),
+          },
+        ],
+      },
+    };
+  }, [chartData]);
+
+  const thirdChartData = useMemo(() => {
+    const data = chartData["3"]?.slot_data;
+    const chartDataNew = data?.reduce((acc, { month, sum_equal }) => {
+      const monthYear = month;
+      if (acc[monthYear]) {
+        acc[monthYear] += sum_equal;
+      } else {
+        acc[monthYear] = sum_equal;
+      }
+      return acc;
+    }, {});
+
+    const sortedData =
+      chartDataNew &&
+      Object.fromEntries(
+        Object.entries(chartDataNew)?.sort(([dateA], [dateB]) => {
+          // Parse the dates in "MM-YYYY" format
+          const [monthA, yearA] = dateA.split("-").map(Number);
+          const [monthB, yearB] = dateB.split("-").map(Number);
+          const dateObjA = new Date(yearA, monthA - 1); // JS months are 0-indexed
+          const dateObjB = new Date(yearB, monthB - 1);
+          return dateObjA - dateObjB;
+        })
+      );
+    return {
+      data: {
+        labels: sortedData && Object.keys(sortedData),
+        dataUnit: "BTC",
+        datasets: [
+          {
+            label: chartData["3"]?.title,
+            color: "#0069FF",
+            backgroundColor: "rgba(26, 120, 255,0.25)",
+            borderColor: "#0069FF",
+            pointHoverBorderColor: "#0069FF",
+            fill: true,
+            barPercentage: 0.1,
+            categoryPercentage: 0.1,
+            borderWidth: 2,
+            lineTension: 0.1,
+            pointBorderColor: "transparent",
+            pointBackgroundColor: "transparent",
+            pointHoverBackgroundColor: "#fff",
+            data: sortedData && Object.values(sortedData),
+          },
+        ],
+      },
+    };
+  }, [chartData]);
+
+  const forthChartData = useMemo(() => {
+    const data = chartData["4"]?.slot_data;
+    const chartDataNew = data?.reduce((acc, { month, total_billed_amount }) => {
+      const monthYear = month;
+      if (acc[monthYear]) {
+        acc[monthYear] += total_billed_amount;
+      } else {
+        acc[monthYear] = total_billed_amount;
+      }
+      return acc;
+    }, {});
+
+    const sortedData =
+      chartDataNew &&
+      Object.fromEntries(
+        Object.entries(chartDataNew)?.sort(([dateA], [dateB]) => {
+          // Parse the dates in "MM-YYYY" format
+          const [monthA, yearA] = dateA.split("-").map(Number);
+          const [monthB, yearB] = dateB.split("-").map(Number);
+          const dateObjA = new Date(yearA, monthA - 1); // JS months are 0-indexed
+          const dateObjB = new Date(yearB, monthB - 1);
+          return dateObjA - dateObjB;
+        })
+      );
+
+    return {
+      data: {
+        labels: sortedData && Object.keys(sortedData),
+        dataUnit: "BTC",
+        datasets: [
+          {
+            label: chartData["4"]?.title,
+            backgroundColor: ["rgba(156, 171, 255, 0.8)", "rgba(244, 170, 164, 0.8)"],
+            borderColor: "#fff",
+
+            data: sortedData && Object.values(sortedData),
+          },
+        ],
+      },
+    };
+  }, [chartData]);
+
+  const fifthChartData = useMemo(() => {
+    const data = chartData["5"]?.slot_data;
+    const chartDataNew = data?.reduce((acc, { month, total_billed_amount }) => {
+      const monthYear = month;
+      if (acc[monthYear]) {
+        acc[monthYear] += total_billed_amount;
+      } else {
+        acc[monthYear] = total_billed_amount;
+      }
+      return acc;
+    }, {});
+
+    const sortedData =
+      chartDataNew &&
+      Object.fromEntries(
+        Object.entries(chartDataNew)?.sort(([dateA], [dateB]) => {
+          // Parse the dates in "MM-YYYY" format
+          const [monthA, yearA] = dateA.split("-").map(Number);
+          const [monthB, yearB] = dateB.split("-").map(Number);
+          const dateObjA = new Date(yearA, monthA - 1); // JS months are 0-indexed
+          const dateObjB = new Date(yearB, monthB - 1);
+          return dateObjA - dateObjB;
+        })
+      );
+    return {
+      data: {
+        labels: sortedData && Object.keys(sortedData),
+        // dataUnit: "USD",
+        datasets: [
+          {
+            label: chartData["5"]?.title,
+            backgroundColor: ["rgba(156, 171, 255, 0.8)", "rgba(143, 234, 197, 0.8)"],
+            borderColor: "#fff",
+
+            data: sortedData && Object.values(sortedData),
+          },
+        ],
+      },
+    };
+  }, [chartData]);
+
+  const sixthChartData = useMemo(() => {
+    const data = chartData["6"]?.slot_data;
+    const chartDataNew = data?.reduce((acc, { month, total_billed_amount }) => {
+      const monthYear = month;
+      if (acc[monthYear]) {
+        acc[monthYear] += total_billed_amount;
+      } else {
+        acc[monthYear] = total_billed_amount;
+      }
+      return acc;
+    }, {});
+
+    const sortedData =
+      chartDataNew &&
+      Object.fromEntries(
+        Object.entries(chartDataNew)?.sort(([dateA], [dateB]) => {
+          // Parse the dates in "MM-YYYY" format
+          const [monthA, yearA] = dateA.split("-").map(Number);
+          const [monthB, yearB] = dateB.split("-").map(Number);
+          const dateObjA = new Date(yearA, monthA - 1); // JS months are 0-indexed
+          const dateObjB = new Date(yearB, monthB - 1);
+          return dateObjA - dateObjB;
+        })
+      );
+    return {
+      data: {
+        labels: sortedData && Object.keys(sortedData),
+        // dataUnit: "USD",
+        datasets: [
+          {
+            label: chartData["6"]?.title,
+            color: "#8feac5",
+            backgroundColor: "#8feac5",
+            barPercentage: 0.8,
+            categoryPercentage: 0.6,
+            data: sortedData && Object.values(sortedData),
+          },
+        ],
+      },
+    };
+  }, [chartData]);
+
   return (
     <>
       <Head title="Homepage"></Head>
@@ -48,11 +306,8 @@ const Homepage = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle page tag="h3">
-                Welcome to I9-Insights!
+                Welcome to i9-Insights!
               </BlockTitle>
-              {/* <BlockDes className="text-soft">
-                <p>Welcome to DashLite Dashboard Template</p>
-              </BlockDes> */}
             </BlockHeadContent>
             <BlockHeadContent>
               <div className="toggle-wrap nk-block-tools-toggle">
@@ -62,64 +317,6 @@ const Homepage = () => {
                 >
                   <Icon name="more-v" />
                 </Button>
-                <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
-                  <ul className="nk-block-tools g-3">
-                    {/* <li>
-                      <UncontrolledDropdown>
-                        <DropdownToggle tag="a" className="dropdown-toggle btn btn-white btn-dim btn-outline-light">
-                          <Icon className="d-none d-sm-inline" name="calender-date" />
-                          <span>
-                            <span className="d-none d-md-inline">Last</span> 30 Days
-                          </span>
-                          <Icon className="dd-indc" name="chevron-right" />
-                        </DropdownToggle>
-                        <DropdownMenu>
-                          <ul className="link-list-opt no-bdr">
-                            <li>
-                              <DropdownItem
-                                tag="a"
-                                onClick={(ev) => {
-                                  ev.preventDefault();
-                                }}
-                                href="#!"
-                              >
-                                <span>Last 30 days</span>
-                              </DropdownItem>
-                            </li>
-                            <li>
-                              <DropdownItem
-                                tag="a"
-                                onClick={(ev) => {
-                                  ev.preventDefault();
-                                }}
-                                href="#dropdownitem"
-                              >
-                                <span>Last 6 months</span>
-                              </DropdownItem>
-                            </li>
-                            <li>
-                              <DropdownItem
-                                tag="a"
-                                onClick={(ev) => {
-                                  ev.preventDefault();
-                                }}
-                                href="#dropdownitem"
-                              >
-                                <span>Last 3 weeks</span>
-                              </DropdownItem>
-                            </li>
-                          </ul>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </li> */}
-                    {/* <li className="nk-block-tools-opt">
-                      <Button color="primary">
-                        <Icon name="reports" />
-                        <span>Reports</span>
-                      </Button>
-                    </li> */}
-                  </ul>
-                </div>
               </div>
             </BlockHeadContent>
           </BlockBetween>
@@ -128,74 +325,58 @@ const Homepage = () => {
           <Row className="g-gs">
             <Col md="6" xxl="4">
               <PreviewAltCard className="h-100">
-                <h6 className="title">Sales Overview</h6>
-                <p>In 30 days sales of product subscription.</p>  
-                <SalesOverview />
+                <h6 className="title">{chartData["1"]?.title}</h6>
+                <p>{chartData["1"]?.tag}</p>
+                <div className="nk-sales-ck large pt-4" style={{ height: "300px" }}>
+                  <LineChartExample data={firstChartData.data} options={firstChartData.options} />
+                </div>
               </PreviewAltCard>
             </Col>
             <Col md="6" xxl="4">
               <PreviewCard className="h-100">
-                <h6 className="title">Orders Overview</h6>
-                <p>In last days buy and sells overview.</p>
-                <OrderOverview />
-              </PreviewCard>
-            </Col>
-            <Col md="6" xxl="4">
-              <PreviewCard className="h-100">
-                <h6 className="title">User Activities</h6>
-                <p> Data of last 15 days is shown in given graph.</p>
-                <UserActivity />
-              </PreviewCard>
-            </Col>
-            <Col md="6" xxl="4">
-              <PreviewCard className="h-100">
-                <h6 className="title">Traffic Channel</h6>
-                <p>In last 15 days buy and sells overview.</p>
-                <TrafficDougnut />
-              </PreviewCard>
-            </Col>
-            <Col md="6" xxl="4">
-              <PreviewCard className="h-100">
-                <div style={{ height: "250px" }}>
-                  <h6 className="title">Trend Intersection</h6>
-                  <p>A chart highlight relation between two values.</p>
-                  <LineChartExample legend={true} data={solidLineChart} />
+                <h6 className="title">{chartData["2"]?.title}</h6>
+                <p>{chartData["2"]?.tag}</p>
+                <div className="nk-order-ovwg-ck" style={{ height: "300px" }}>
+                  <LineChartExample data={secondChartData.data} options={secondChartData.options} />
                 </div>
               </PreviewCard>
             </Col>
-            <Col md="6"  xxl="4">
+            <Col md="6" xxl="4">
               <PreviewCard className="h-100">
-                <h6 className="title">Active Users</h6>
-                <p>How do your users visited in the time.</p>
-                <ActiveUser />
+                <h6 className="title">{chartData["3"]?.title}</h6>
+                <p>{chartData["3"]?.tag}</p>
+                <div className="nk-sales-ck large pt-4" style={{ height: "300px" }}>
+                  <LineChartExample data={thirdChartData.data} options={thirdChartData.options} />
+                </div>
               </PreviewCard>
             </Col>
-            <Col>
-              <Card className="card-bordered card-full w-100">
-                {/* <TransactionTable /> */}
-                <TransListBasic />
-              </Card>
+            <Col md="6" xxl="4">
+              <PreviewCard className="h-100">
+                <h6 className="title">{chartData["4"]?.title}</h6>
+                <p>{chartData["4"]?.tag}</p>
+                <div style={{ height: "250px" }}>
+                  <PieChartExample data={forthChartData.data} />
+                </div>
+              </PreviewCard>
             </Col>
-            <Col xxl="4" md="6">
-              {/* <Card className="card-bordered card-full">
-                <RecentActivity />
-              </Card> */}
+            <Col md="6" xxl="4">
+              <PreviewCard className="h-100">
+                <h6 className="title">{chartData["5"]?.title}</h6>
+                <p>{chartData["5"]?.tag}</p>
+                <div style={{ height: "250px" }}>
+                  <PieChartExample data={fifthChartData.data} />
+                </div>
+              </PreviewCard>
             </Col>
-            {/* <Col xxl="4" md="6">
-              <Card className="card-bordered card-full">
-                <NewsUsers />
-              </Card>
-            </Col> */}
-            {/* <Col lg="6" xxl="4">
-              <Card className="card-bordered h-100">
-                <Support />
-              </Card>
-            </Col> */}
-            {/* <Col lg="6" xxl="4">
-              <Card className="card-bordered h-100">
-                <Notifications />
-              </Card>
-            </Col> */}
+            <Col md="6" xxl="4">
+              <PreviewCard className="h-100">
+                <h6 className="title">{chartData["6"]?.title}</h6>
+                <p>{chartData["6"]?.tag}</p>
+                <div style={{ height: "300px" }}>
+                  <BarChartExample data={sixthChartData.data} />
+                </div>
+              </PreviewCard>
+            </Col>
           </Row>
         </Block>
       </Content>

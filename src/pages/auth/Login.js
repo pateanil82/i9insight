@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import Logo from "../../assets/images/logo.jpg";
-import LogoDark from "../../images/logo-dark.png";
 import Head from "../../layout/head/Head";
-import AuthFooter from "./AuthFooter";
 import {
   Block,
   BlockContent,
-  BlockDes,
   BlockHead,
   BlockTitle,
   Button,
@@ -18,6 +15,8 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { login, setUserName, token } from "../../services/authServices";
 import { useNavigate } from "react-router-dom";
+import { toastConfig } from "../../config/toastConfig";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -41,11 +40,16 @@ const Login = () => {
       const response = await token(data);
       if (response.statusCode === 200) {
         const responseLogin = await login();
-        setUserName(responseLogin.data)
+        setUserName(responseLogin.data);
         navigate("/");
+      } else {
+        console.log("console_error__1", response);
+        toast.error(response.errorMessage, toastConfig);
       }
     } catch (error) {
-      console.log("console_error", error);
+      toast.error("An error occurred", toastConfig);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,9 +85,6 @@ const Login = () => {
           <BlockHead>
             <BlockContent>
               <BlockTitle tag="h4">Sign-In</BlockTitle>
-              {/* <BlockDes>
-                <p>Access Dashlite using your email and passcode.</p>
-              </BlockDes> */}
             </BlockContent>
           </BlockHead>
           {errorVal && (
@@ -105,7 +106,7 @@ const Login = () => {
                   type="text"
                   id="default-01"
                   {...register("name", { required: "This field is required" })}
-                  defaultValue="demo-admin"
+                  // defaultValue="demo-admin"
                   placeholder="Enter your username"
                   className="form-control-lg form-control"
                 />
@@ -138,7 +139,7 @@ const Login = () => {
                   type={passState ? "text" : "password"}
                   id="password"
                   {...register("passcode", { required: "This field is required" })}
-                  defaultValue="i9demo@123"
+                  // defaultValue="i9demo@123"
                   placeholder="Enter your passcode"
                   className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}
                 />
@@ -151,38 +152,6 @@ const Login = () => {
               </Button>
             </div>
           </Form>
-          {/* <div className="form-note-s2 text-center pt-4">
-            New on our platform? <Link to={`${process.env.PUBLIC_URL}/register`}>Create an account</Link>
-          </div> */}
-          {/* <div className="text-center pt-4 pb-3">
-            <h6 className="overline-title overline-title-sap">
-              <span>OR</span>
-            </h6>
-          </div> */}
-          {/* <ul className="nav justify-center gx-4">
-            <li className="nav-item">
-              <a
-                className="nav-link"
-                href="#socials"
-                onClick={(ev) => {
-                  ev.preventDefault();
-                }}
-              >
-                Facebook
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className="nav-link"
-                href="#socials"
-                onClick={(ev) => {
-                  ev.preventDefault();
-                }}
-              >
-                Google
-              </a>
-            </li>
-          </ul> */}
         </PreviewCard>
       </Block>
       {/* <AuthFooter /> */}

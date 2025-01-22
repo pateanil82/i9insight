@@ -2,9 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import Toggle from "../sidebar/Toggle";
 import Logo from "../logo/Logo";
-import News from "../news/News";
 import User from "./dropdown/user/User";
-import Notification from "./dropdown/notification/Notification";
 
 import { useTheme, useThemeUpdate } from '../provider/Theme';
 
@@ -34,17 +32,13 @@ const Header = ({ fixed, className, ...props }) => {
           <div className="nk-header-brand d-xl-none">
             <Logo />
           </div>
-          {/* <div className="nk-header-news d-none d-xl-block">
-            <News />
-          </div> */}
+   
           <div className="nk-header-tools">
             <ul className="nk-quick-nav">
               <li className="user-dropdown">
                 <User/>
               </li>
-              {/* <li className="notification-dropdown me-n1">
-                <Notification />
-              </li> */}
+      
             </ul>
           </div>
         </div>
