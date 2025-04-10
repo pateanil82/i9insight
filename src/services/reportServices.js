@@ -70,7 +70,7 @@ export const getDistinctAttrValues = async () => {
 export const getSalesReport = async (params, uri) => {
   try {
     const response = await axiosInstance.get(`/${uri}/`, { params });
-    return { statusCode: response.status, data: JSON.parse(response.data) };
+    return { statusCode: response.status, data: response.data };
   } catch (error) {
     console.log("console_error", error);
     return handleError(error);

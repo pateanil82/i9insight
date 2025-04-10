@@ -6,9 +6,11 @@ import { Col, Row, Card, CardTitle } from "reactstrap";
 import ReportTable from "./ReportTable";
 import { ReportContext } from "./ReportContext";
 import ReportForm from "./ReportForm";
+import SalesTrendTable from "./SalesTrendTable";
+import SalesThroughTable from "./SalesThroughTable";
 
 const ReportContainer = () => {
-  const { noSalesData, salesExportData } = useContext(ReportContext);
+  const { noSalesData, salesExportData, reportName } = useContext(ReportContext);
   const [reportLoader, setReportLoader] = useState(false);
   // const formatDate = (timestamp) => {
   //   const date = new Date(timestamp);
@@ -88,15 +90,22 @@ const ReportContainer = () => {
           ) : (
             <>
               <div className="border-bottom mt-4" />
-              <ReportTable />
-              {Object.keys(chartData).length > 0 && (
-                <>
-                  <div className="border-bottom mt-4" />
-                  <div style={{ height: "250px" }}>
-                    <BarChartExample legend={true} data={barChartData} />
-                  </div>
-                </>
+              {reportName === "sales_trend" || reportName === "stock_cover" ? (
+                <SalesTrendTable />
+              ) : reportName === "sales_through" ? (
+                <SalesThroughTable />
+              ) : (
+                <ReportTable />
               )}
+              {reportName === "date_wise" ||
+                (reportName === "month_wise" && Object.keys(chartData).length > 0 && (
+                  <>
+                    <div className="border-bottom mt-4" />
+                    <div style={{ height: "250px" }}>
+                      <BarChartExample legend={true} data={barChartData} />
+                    </div>
+                  </>
+                ))}
             </>
           )}
         </PreviewCard>

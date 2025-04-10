@@ -17,6 +17,8 @@ import Layout from "../layout/Index";
 import LayoutNoSidebar from "../layout/Index-nosidebar";
 import Report from "../pages/report";
 import AppProvider from "../context/appContext";
+import RecoveryProvider from "../pages/recoveryEngine/RecoveryContext";
+import Recovery from "../pages/recoveryEngine";
 
 const Router = () => {
   const location = useLocation();
@@ -44,6 +46,9 @@ const Router = () => {
         >
           <Route index element={<Homepage />}></Route>
           <Route path="report" element={<Report />}></Route>
+          <Route path="data-prism" element={<RecoveryProvider />}>
+            <Route path="" element={<Recovery />}></Route>
+          </Route>
         </Route>
         <Route path={`${process.env.PUBLIC_URL}`} element={<LayoutNoSidebar />}>
           {/* <Route path="auth-success" element={<Success />}></Route> */}

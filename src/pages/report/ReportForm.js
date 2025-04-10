@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import * as Yup from "yup";
 import { Col, Row, FormGroup, Label, Button, Spinner } from "reactstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -39,8 +39,9 @@ const salesThroughReportSchema = Yup.object().shape({
 });
 const stockCoverReportSchema = Yup.object().shape({
   entity_type: Yup.object().required("Field is required"),
-  attr_value: Yup.object().required("Field is required"), //item_group
-  fashion_grade: Yup.object().required("Field is required"),
+  attr_value: Yup.object().required("Field is required"), 
+  para_value: Yup.object().required("Field is required"),
+  child_name: Yup.object().required("Field is required"),
 });
 
 const StyledErrorMessage = styled.span`
@@ -60,8 +61,12 @@ const ReportForm = ({ reportLoader, setReportLoader }) => {
     itemValueData,
     itemNameData,
     setReportName,
-
+    reportName,
+    selectedItemName,
     setSalesExportData,
+    selectedParaValue,
+    entityData,
+    setSelectedItemName,
   } = useContext(ReportContext);
 
   const handleSubmit = async (data) => {
@@ -129,8 +134,8 @@ const ReportForm = ({ reportLoader, setReportLoader }) => {
           entity_type: data.entity_type.value,
           attr1: data.attr1.value,
           attr2: data.attr2.value,
-          days_block: 7,
-          no_of_blocks: 2,
+          days_block: data.days_block ?? 7,
+          no_of_blocks: data.no_of_blocks ?? 2,
         };
         break;
       case "sales_through":
@@ -142,32 +147,43 @@ const ReportForm = ({ reportLoader, setReportLoader }) => {
           para_value: data.para_value.value,
         };
         break;
-      case "sales_through":
-        uri = "stocks/stocks_cover";
+      case "stock_cover":
+        uri = "stocks/stock_cover";
         payload = {
           entity_type: data.entity_type.value,
+          entity_name: data.child_name.value,
           item_group: data.attr_value.value,
-          fashion_grade: data.fashion_grade.value,
+          fashion_grade: data.para_value.value,
         };
         break;
     }
 
     try {
       setReportLoader(true);
-      const response = await getSalesReport(payload, uri);
 
+      const response = await getSalesReport(payload, uri);
       if (data.reportName.value === "date_wise" || data.reportName.value === "month_wise") {
         const responseExport = await getSalesReport({ ...payload, limit: 0 }, uri);
         if (responseExport) {
-          setSalesExportData(responseExport.data);
+          setSalesExportData(JSON.parse(responseExport.data));
         }
       }
-      if (response?.data) {
+      if (
+        data.reportName.value === "sales_trend" ||
+        data.reportName.value === "sales_through" ||
+        data.reportName.value === "stock_cover"
+      ) {
         setSalesData(response.data);
+        setSalesExportData(response.data);
       } else {
-        setNoSalesData("No data Found");
+        if (response.data) {
+          setSalesData(JSON.parse(response.data));
+        } else {
+          setNoSalesData("No data Found");
+          setSalesData([]);
+          setSalesExportData([]);
+        }
       }
-      console.log("console_sales_res", response);
     } catch (error) {
       console.log("console_sales_error", error);
     } finally {
@@ -210,6 +226,8 @@ const ReportForm = ({ reportLoader, setReportLoader }) => {
     setFieldValue("para_name", null);
     setFieldValue("para_value", null);
     setFieldValue("item_group", null);
+    setFieldValue("days_block", 7);
+    setFieldValue("no_of_blocks", 2);
     setFieldTouched("from_date", false);
     setFieldTouched("to_date", false);
     setFieldTouched("zone_code", false);
@@ -228,6 +246,12 @@ const ReportForm = ({ reportLoader, setReportLoader }) => {
     setFieldTouched("para_value", false);
     setFieldTouched("item_group", false);
   };
+
+  useEffect(() => {
+    if (reportName === "stock_cover") {
+      setSelectedItemName("Fashion_Grade");
+    }
+  }, [reportName]);
 
   return (
     <Formik
@@ -250,6 +274,8 @@ const ReportForm = ({ reportLoader, setReportLoader }) => {
         para_name: null,
         para_value: null,
         item_group: null,
+        days_block: null,
+        no_of_blocks: null,
       }}
       validate={(values) => {
         const errors = {};
@@ -307,6 +333,8 @@ const ReportForm = ({ reportLoader, setReportLoader }) => {
                           removeErrors(setFieldError, setFieldTouched, setFieldValue);
                           form.setFieldValue(field.name, value);
                           setReportName(value.value);
+                          setSalesData([]);
+                          setSalesExportData([]);
                         }}
                         options={reportData}
                         value={field.value}
@@ -352,17 +380,43 @@ const ReportForm = ({ reportLoader, setReportLoader }) => {
                     <ErrorMessage name="entity_type" component={StyledErrorMessage} className="invalid" />
                   </FormGroup>
                 </Col>
-                <Col md={6}>
+                {values?.reportName?.value === "stock_cover" && (
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label htmlFor="child_name">
+                        Select Entity Name<span className="text-danger"> *</span>
+                      </Label>
+                      <Field name="child_name" className="form-control">
+                        {({ field, form }) => (
+                          <>
+                            <RSelect
+                              {...field}
+                              placeholder="Select Entity Name"
+                              isClearable
+                              onChange={(value) => {
+                                form.setFieldValue(field.name, value);
+                              }}
+                              options={entityData?.map((item) => ({ label: item, value: item }))}
+                              value={field.value}
+                            />
+                          </>
+                        )}
+                      </Field>
+                      <ErrorMessage name="child_name" component={StyledErrorMessage} className="invalid" />
+                    </FormGroup>
+                  </Col>
+                )}
+                <Col md={values?.reportName?.value === "stock_cover" ? 12 : 6}>
                   <FormGroup>
                     <Label htmlFor="attr_value">
-                      Item Group<span className="text-danger"> *</span>
+                      Brand<span className="text-danger"> *</span>
                     </Label>
                     <Field name="attr_value" className="form-control">
                       {({ field, form }) => (
                         <>
                           <RSelect
                             {...field}
-                            placeholder="Item Group"
+                            placeholder="Brand"
                             isClearable
                             onChange={(value) => {
                               form.setFieldValue(field.name, value);
@@ -394,20 +448,24 @@ const ReportForm = ({ reportLoader, setReportLoader }) => {
               <>
                 <Col md={6}>
                   <FormGroup>
-                    <Label htmlFor="para_name">Parameter Name </Label>
+                    <Label htmlFor="para_name">
+                      Attribute Name <span className="text-danger"> *</span>
+                    </Label>
                     <Field name="para_name" className="form-control">
                       {({ field, form }) => (
                         <>
                           <RSelect
                             {...field}
-                            placeholder="Parameter Name "
+                            placeholder="Attribute Name "
                             isClearable
+                            isDisabled
                             onChange={(value) => {
                               form.setFieldValue(field.name, value);
+                              setSelectedItemName(value.value);
                               setFieldValue("para_value", null);
                             }}
                             options={itemNameData?.map((item) => ({ label: item, value: item }))}
-                            value={field.value}
+                            value={{ label: "Fashion_Grade", value: "Fashion_Grade" }}
                           />
                         </>
                       )}
@@ -417,13 +475,15 @@ const ReportForm = ({ reportLoader, setReportLoader }) => {
                 </Col>
                 <Col md={6}>
                   <FormGroup>
-                    <Label htmlFor="para_value">Parameters Value</Label>
+                    <Label htmlFor="para_value">
+                      Attributes Value<span className="text-danger"> *</span>
+                    </Label>
                     <Field name="para_value" className="form-control">
                       {({ field, form }) => (
                         <>
                           <RSelect
                             {...field}
-                            placeholder="Parameters Value"
+                            placeholder="Attributes Value"
                             isClearable
                             onChange={(value) => {
                               form.setFieldValue(field.name, value);

@@ -11,27 +11,33 @@ const StyledErrorMessage = styled.span`
   font-style: italic;
 `;
 const SalesThroughReport = ({ setFieldValue }) => {
-  const { itemNameData, setSelectedEntityType, itemValueData, entityTypeData, childName, setSelectedItemName } =
-    useContext(ReportContext);
+  const {
+    itemNameData,
+    setSelectedEntityType,
+    itemValueData,
+    entityTypeData,
+    entityData,
+    setSelectedItemName,
+  } = useContext(ReportContext);
 
   return (
     <>
       <Col md={6}>
         <FormGroup>
           <Label htmlFor="child_type">
-            Select Child Type<span className="text-danger"> *</span>
+            Select Entity Type<span className="text-danger"> *</span>
           </Label>
           <Field name="child_type" className="form-control">
             {({ field, form }) => (
               <>
                 <RSelect
                   {...field}
-                  placeholder="Select Child Type"
+                  placeholder="Select Entity Type"
                   isClearable
                   onChange={(value) => {
                     form.setFieldValue(field.name, value);
                     setSelectedEntityType(value.value);
-                    setFieldValue("para_value", null);
+                    setFieldValue("child_name", null);
                   }}
                   options={entityTypeData?.map((item) => ({ label: item, value: item }))}
                   value={field.value}
@@ -45,19 +51,19 @@ const SalesThroughReport = ({ setFieldValue }) => {
       <Col md={6}>
         <FormGroup>
           <Label htmlFor="child_name">
-            Select Child Name<span className="text-danger"> *</span>
+            Select Entity Name<span className="text-danger"> *</span>
           </Label>
           <Field name="child_name" className="form-control">
             {({ field, form }) => (
               <>
                 <RSelect
                   {...field}
-                  placeholder="Select Child Name"
+                  placeholder="Select Entity Name"
                   isClearable
                   onChange={(value) => {
                     form.setFieldValue(field.name, value);
                   }}
-                  options={childName?.map((item) => ({ label: item, value: item }))}
+                  options={entityData?.map((item) => ({ label: item, value: item }))}
                   value={field.value}
                 />
               </>
@@ -72,14 +78,14 @@ const SalesThroughReport = ({ setFieldValue }) => {
       <Col md={6}>
         <FormGroup>
           <Label htmlFor="para_name">
-            Parameter Name <span className="text-danger"> *</span>
+            Attribute Name <span className="text-danger"> *</span>
           </Label>
           <Field name="para_name" className="form-control">
             {({ field, form }) => (
               <>
                 <RSelect
                   {...field}
-                  placeholder="Parameter Name "
+                  placeholder="Attribute Name "
                   isClearable
                   onChange={(value) => {
                     form.setFieldValue(field.name, value);
@@ -98,14 +104,14 @@ const SalesThroughReport = ({ setFieldValue }) => {
       <Col md={6}>
         <FormGroup>
           <Label htmlFor="para_value">
-            Parameters Value <span className="text-danger"> *</span>
+            Attributes Value <span className="text-danger"> *</span>
           </Label>
           <Field name="para_value" className="form-control">
             {({ field, form }) => (
               <>
                 <RSelect
                   {...field}
-                  placeholder="Parameters Value"
+                  placeholder="Attributes Value"
                   isClearable
                   onChange={(value) => {
                     form.setFieldValue(field.name, value);

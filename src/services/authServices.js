@@ -44,7 +44,6 @@ export const token = async (payload) => {
     setAccessToken(response.data.access_token);
     return { statusCode: response.status, successMessage: "Login successful", data: response.data };
   } catch (error) {
-    console.log("console_error__1", error);
     return handleError(error);
   }
 };
@@ -53,7 +52,6 @@ export const login = async () => {
     const response = await axiosInstance.get("/users/login/");
     return { statusCode: response.status, successMessage: "Login successful", data: response.data };
   } catch (error) {
-    console.log("console_error", error);
     return handleError(error);
   }
 };

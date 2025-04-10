@@ -11,7 +11,7 @@ const StyledErrorMessage = styled.span`
   font-style: italic;
 `;
 const SalesTrendReportForm = ({ values, setFieldValue }) => {
-  const { itemNameData, setSelectedItemName } = useContext(ReportContext);
+  const { itemNameData, setSelectedItemName, setSelectedParaValue } = useContext(ReportContext);
   return (
     <>
       <Col md={12}>
@@ -20,19 +20,20 @@ const SalesTrendReportForm = ({ values, setFieldValue }) => {
       <Col md={6}>
         <FormGroup>
           <Label htmlFor="attr1">
-            Parameter-1 <span className="text-danger"> *</span>
+            Attribute-1 <span className="text-danger"> *</span>
           </Label>
           <Field name="attr1" className="form-control">
             {({ field, form }) => (
               <>
                 <RSelect
                   {...field}
-                  placeholder="Parameter-1"
+                  placeholder="Attribute-1"
                   isClearable
                   onChange={(value) => {
                     form.setFieldValue(field.name, value);
                     setSelectedItemName(value.value);
                     setFieldValue("attr2", null);
+                    setSelectedParaValue(null);
                   }}
                   options={itemNameData?.map((item) => ({
                     label: item,
@@ -50,17 +51,18 @@ const SalesTrendReportForm = ({ values, setFieldValue }) => {
       <Col md={6}>
         <FormGroup>
           <Label htmlFor="attr2">
-            Parameters-2 <span className="text-danger"> *</span>
+            Attributes-2 <span className="text-danger"> *</span>
           </Label>
           <Field name="attr2" className="form-control">
             {({ field, form }) => (
               <>
                 <RSelect
                   {...field}
-                  placeholder="Parameters-2"
+                  placeholder="Attributes-2"
                   isClearable
                   onChange={(value) => {
                     form.setFieldValue(field.name, value);
+                    setSelectedParaValue(value.value);
                   }}
                   options={itemNameData?.map((item) => ({
                     label: item,
@@ -73,6 +75,18 @@ const SalesTrendReportForm = ({ values, setFieldValue }) => {
             )}
           </Field>
           <ErrorMessage name="attr2" component={StyledErrorMessage} className="invalid" />
+        </FormGroup>
+      </Col>
+      <Col md={6}>
+        <FormGroup>
+          <Label htmlFor="days_block">Days block</Label>
+          <Field name="days_block" type="number" min className="form-control"></Field>
+        </FormGroup>
+      </Col>
+      <Col md={6}>
+        <FormGroup>
+          <Label htmlFor="no_of_blocks">Number of Week</Label>
+          <Field name="no_of_blocks" type="number" min className="form-control"></Field>
         </FormGroup>
       </Col>
     </>

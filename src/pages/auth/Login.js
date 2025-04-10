@@ -43,7 +43,6 @@ const Login = () => {
         setUserName(responseLogin.data);
         navigate("/");
       } else {
-        console.log("console_error__1", response);
         toast.error(response.errorMessage, toastConfig);
       }
     } catch (error) {
@@ -118,9 +117,9 @@ const Login = () => {
                 <label className="form-label" htmlFor="password">
                   Passcode
                 </label>
-                <Link className="link link-primary link-sm" to={`${process.env.PUBLIC_URL}/reset`}>
+                {/* <Link className="link link-primary link-sm" to={`${process.env.PUBLIC_URL}/reset`}>
                   Forgot Code?
-                </Link>
+                </Link> */}
               </div>
               <div className="form-control-wrap">
                 <a

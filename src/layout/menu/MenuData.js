@@ -9,5 +9,10 @@ const menu = [
     text: "Report",
     link: "/report",
   },
+  {
+    icon: "file-docs",
+    text: "Data Prism",
+    link: "/data-prism",
+  },
 ];
 export default menu;

@@ -90,13 +90,13 @@ const DateWiseReport = ({ values, setFieldValue }) => {
       </Col>
       <Col md={6}>
         <FormGroup>
-          <Label htmlFor="para_names">Parameter Name </Label>
+          <Label htmlFor="para_names">Attribute Name </Label>
           <Field name="para_names" className="form-control">
             {({ field, form }) => (
               <>
                 <RSelect
                   {...field}
-                  placeholder="Parameter Name "
+                  placeholder="Attribute Name "
                   isClearable
                   onChange={(value) => {
                     form.setFieldValue(field.name, value);
@@ -114,14 +114,14 @@ const DateWiseReport = ({ values, setFieldValue }) => {
       </Col>
       <Col md={6}>
         <FormGroup>
-          <Label htmlFor="para_values">Parameters Value(s)</Label>
+          <Label htmlFor="para_values">Attributes Value(s)</Label>
           <Field name="para_values" className="form-control">
             {({ field, form }) => (
               <>
                 <RSelect
                   isMulti
                   {...field}
-                  placeholder="Parameters Value(s)"
+                  placeholder="Attributes Value(s)"
                   isClearable
                   onChange={(value) => {
                     form.setFieldValue(field.name, value);

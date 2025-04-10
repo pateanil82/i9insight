@@ -2,28 +2,79 @@ import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import exportFromJSON from "export-from-json";
 import CopyToClipboard from "react-copy-to-clipboard";
-import { Col, Modal, ModalBody, Row, Button } from "reactstrap";
+import { Col, Modal, ModalBody, Row, Button, Label } from "reactstrap";
 import { DataTablePagination } from "../Component";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 
 const Export = ({ data, exportName }) => {
   const [modal, setModal] = useState(false);
-  console.log("exportName", exportName);
   useEffect(() => {
     if (modal === true) {
       setTimeout(() => setModal(false), 2000);
     }
   }, [modal]);
-
+  const convertToCSV = () => {
+    return data.join("\n");
+  };
   const fileName = `${exportName.reportName}-${exportName.selectedEntityType}-${exportName.startDate}-${exportName.endDate}`;
 
   const exportCSV = () => {
-    const exportType = exportFromJSON.types.csv;
-    exportFromJSON({ data, fileName, exportType });
+    switch (exportName.reportName) {
+      case "sales_trend":
+        const csvData = convertToCSV();
+        const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+        saveAs(blob, `${exportName.reportName}-${exportName.selectedEntityType}.csv`);
+        break;
+      case "stock_cover":
+        const csvData1 = convertToCSV();
+        const blob1 = new Blob([csvData1], { type: "text/csv;charset=utf-8;" });
+        saveAs(blob1, `${exportName.reportName}.csv`);
+        break;
+      case "sales_through":
+        const csvData2 = convertToCSV();
+        const blob2 = new Blob([csvData2], { type: "text/csv;charset=utf-8;" });
+        saveAs(blob2, `${exportName.reportName}-${exportName.selectedEntityType}.csv`);
+        break;
+      default:
+        const exportType = exportFromJSON.types.csv;
+        exportFromJSON({ data, fileName, exportType });
+    }
   };
 
   const exportExcel = () => {
-    const exportType = exportFromJSON.types.xls;
-    exportFromJSON({ data, fileName, exportType });
+    switch (exportName.reportName) {
+      case "sales_trend":
+        const sheetData = data.map((row) => row.split(",")); // Split data rows into arrays
+        const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        const xlsData = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+        const blob = new Blob([xlsData], { type: "application/octet-stream" });
+        saveAs(blob, `${exportName.reportName}-${exportName.selectedEntityType}.xlsx`);
+        break;
+      case "stock_cover":
+        const sheetData1 = data.map((row) => row.split(",")); // Split data rows into arrays
+        const worksheet1 = XLSX.utils.aoa_to_sheet(sheetData1);
+        const workbook1 = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook1, worksheet1, "Sheet1");
+        const xlsData1 = XLSX.write(workbook1, { bookType: "xlsx", type: "array" });
+        const blob1 = new Blob([xlsData1], { type: "application/octet-stream" });
+        saveAs(blob1, `${exportName.reportName}-${exportName.selectedEntityType}.xlsx`);
+        break;
+      case "sales_through":
+        const sheetData2 = data.map((row) => row.split(",")); // Split data rows into arrays
+        const worksheet2 = XLSX.utils.aoa_to_sheet(sheetData2);
+        const workbook2 = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook2, worksheet2, "Sheet1");
+        const xlsData2 = XLSX.write(workbook2, { bookType: "xlsx", type: "array" });
+        const blob2 = new Blob([xlsData2], { type: "application/octet-stream" });
+        saveAs(blob2, `${exportName.reportName}-${exportName.selectedEntityType}.xlsx`);
+        break;
+      default:
+        const exportType = exportFromJSON.types.xls;
+        exportFromJSON({ data, fileName, exportType });
+    }
   };
 
   const copyToClipboard = () => {
@@ -115,20 +166,31 @@ const ReactDataTable = ({
   selectableRows,
   expandableRows,
   exportName,
-  exportData
+  exportData,
+  searchName,
+  subHeader,
+  subHeaderComponent,
+  customStyles,
+  options,
+  selectValue,
+  setSelectValue,
 }) => {
   const [tableData, setTableData] = useState(data);
   const [searchText, setSearchText] = useState("");
   const [mobileView, setMobileView] = useState();
-  console.log("data, columns", data, columns);
+
   useEffect(() => {
     setTableData(data);
   }, [data]);
+
   useEffect(() => {
     let defaultData = tableData;
     if (searchText !== "") {
       defaultData = data.filter((item) => {
-        return item.Child_Name.toLowerCase().includes(searchText.toLowerCase());
+        return (
+          item?.Child_Name?.toLowerCase().includes(searchText.toLowerCase()) ||
+          item?.[searchName]?.toLowerCase().includes(searchText.toLowerCase())
+        );
       });
       setTableData(defaultData);
     } else {
@@ -171,6 +233,28 @@ const ReactDataTable = ({
           <div className="datatable-filter">
             <div className="d-flex justify-content-end g-2">
               {actions && <Export data={exportData} exportName={exportName} />}
+              {actions && exportName.reportName === "sales_trend" && (
+                <div>
+                  <div className="form-group">
+                    <div className="form-control-wrap">
+                      <div className="form-control-select">
+                        <select
+                          className="form-control form-select"
+                          id="fv-topics"
+                          placeholder="Select a week"
+                          value={selectValue}
+                          onChange={(e) => setSelectValue(e.target.value)}
+                        >
+                          <option label="Select a week" value="" disabled></option>
+                          {options.map((item) => (
+                            <option value={item.split("-")[1]}>{item}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </Col>
@@ -183,13 +267,10 @@ const ReactDataTable = ({
         selectableRowsComponent={CustomCheckbox}
         expandableRowsComponent={ExpandableRowComponent}
         expandableRows={mobileView}
+        subHeader={subHeader}
+        customStyles={customStyles}
+        subHeaderComponent={subHeaderComponent}
         noDataComponent={<div className="p-2">There are no records found</div>}
-        // sortIcon={
-        //   <div>
-        //     <span>&darr;</span>
-        //     <span>&uarr;</span>
-        //   </div>
-        // }
         pagination={pagination}
         paginationComponent={({ currentPage, rowsPerPage, rowCount, onChangePage, onChangeRowsPerPage }) => (
           <DataTablePagination

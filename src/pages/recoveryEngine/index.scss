@@ -1,0 +1,21 @@
+.custom-container {
+  height: calc(100% - 20px);
+  .custom-house {
+    padding: 15px;
+  }
+}
+
+.custom-divider {
+  border-bottom: 1px solid #dbdfea;
+  margin: 20px 0;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.warehouse-card-header {
+  padding: 2px 10px !important;
+  background: #fff !important;
+  color: #526484 !important;
+  text-align: center;
+}

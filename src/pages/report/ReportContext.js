@@ -38,6 +38,7 @@ const ReportProvider = ({ children }) => {
   const [reportName, setReportName] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [selectedParaValue, setSelectedParaValue] = useState(null);
 
   const fetchZoneHierarchy = async () => {
     try {
@@ -232,6 +233,8 @@ const ReportProvider = ({ children }) => {
     setEndDate,
     salesExportData,
     setSalesExportData,
+    selectedParaValue, setSelectedParaValue,
+    selectedItemName
   };
   return <ReportContext.Provider value={value}>{children}</ReportContext.Provider>;
 };
