@@ -174,6 +174,7 @@ const ReactDataTable = ({
   options,
   selectValue,
   setSelectValue,
+  searchPlaceHolder="Search by Customer Name"
 }) => {
   const [tableData, setTableData] = useState(data);
   const [searchText, setSearchText] = useState("");
@@ -223,7 +224,7 @@ const ReactDataTable = ({
               <input
                 type="search"
                 className="form-control form-control-sm"
-                placeholder="Search by Customer Name"
+                placeholder={searchPlaceHolder}
                 onChange={(ev) => setSearchText(ev.target.value)}
               />
             </label>

@@ -19,6 +19,8 @@ import Report from "../pages/report";
 import AppProvider from "../context/appContext";
 import RecoveryProvider from "../pages/recoveryEngine/RecoveryContext";
 import Recovery from "../pages/recoveryEngine";
+import StoreAnalysis from "../pages/storeAnalysis";
+import StoreAnalysisProvider from "../pages/storeAnalysis/StoreAnalysisContext";
 
 const Router = () => {
   const location = useLocation();
@@ -48,6 +50,9 @@ const Router = () => {
           <Route path="report" element={<Report />}></Route>
           <Route path="data-prism" element={<RecoveryProvider />}>
             <Route path="" element={<Recovery />}></Route>
+          </Route>
+          <Route path="store-analysis" element={<StoreAnalysisProvider />}>
+            <Route path="" element={<StoreAnalysis />}></Route>
           </Route>
         </Route>
         <Route path={`${process.env.PUBLIC_URL}`} element={<LayoutNoSidebar />}>

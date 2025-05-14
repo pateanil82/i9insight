@@ -10,6 +10,7 @@
 
 .recovery-card {
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .recovery-card .nk-sale-data b {

@@ -14,5 +14,10 @@ const menu = [
     text: "Data Prism",
     link: "/data-prism",
   },
+  {
+    icon: "file-docs",
+    text: "Store Analysis",
+    link: "/store-analysis",
+  },
 ];
 export default menu;

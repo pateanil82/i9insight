@@ -106,27 +106,27 @@ export const LineChartExample = ({ data, legend, yTickLabel = "" }) => {
   );
 };
 
-export const BarChartExample = ({ data, stacked, yTickLabel = "", legend = false }) => {
+export const BarChartExample = ({ data, stacked, yTickLabel = "", legend = false, customToolTip = false }) => {
   return (
     <Bar
       data={data}
       options={{
         plugins: {
           legend: {
-            display: legend ,
+            display: legend,
             labels: {
               font: {
-                size: legend ? 18 :14,
-              
+                size: legend ? 18 : 14,
               },
-            }
+            },
           },
           tooltip: {
             callbacks: {
-              label: function (tooltipItem) {
-                console.log('console_tooltipItem', tooltipItem);
-                return `${tooltipItem.dataset.label}: ${tooltipItem.raw} ${yTickLabel}`;
-              },
+              label: customToolTip
+                ? customToolTip
+                : function (tooltipItem) {
+                    return `${tooltipItem.dataset.label}: ${tooltipItem.raw} ${yTickLabel}`;
+                  },
             },
             enabled: true,
             displayColors: false,

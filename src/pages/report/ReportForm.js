@@ -39,7 +39,7 @@ const salesThroughReportSchema = Yup.object().shape({
 });
 const stockCoverReportSchema = Yup.object().shape({
   entity_type: Yup.object().required("Field is required"),
-  attr_value: Yup.object().required("Field is required"), 
+  attr_value: Yup.object().required("Field is required"),
   para_value: Yup.object().required("Field is required"),
   child_name: Yup.object().required("Field is required"),
 });
@@ -156,6 +156,8 @@ const ReportForm = ({ reportLoader, setReportLoader }) => {
           fashion_grade: data.para_value.value,
         };
         break;
+      default:
+        return null;
     }
 
     try {

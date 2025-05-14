@@ -149,3 +149,10 @@ export const monthNames = [
   "November",
   "December",
 ];
+
+export function formatAmount(amount) {
+  if (isNaN(amount) || amount === null || amount === undefined) return "0.00";
+  return Number(amount)
+    .toFixed(2) // ensures 2 decimal places
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ","); // adds commas
+}

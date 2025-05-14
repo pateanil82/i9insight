@@ -65,3 +65,41 @@ export const getSalesSummaryStatic = async () => {
     return handleError(error);
   }
 };
+export const getSalesPeriodList = async () => {
+  try {
+    const response = await axiosInstance.get(`/sales/get_periods_list/`);
+    return { statusCode: response.status, data: response.data };
+  } catch (error) {
+    console.log("console_error", error);
+    return handleError(error);
+  }
+};
+export const getSalesCompareList = async (params) => {
+  try {
+    const response = await axiosInstance.get(`/sales/get_compare_list/?mode=${params}`);
+    return { statusCode: response.status, data: response.data };
+  } catch (error) {
+    console.log("console_error", error);
+    return handleError(error);
+  }
+};
+
+export const getNDHDData = async (params) => {
+  try {
+    const response = await axiosInstance.get(`/ndhd/ndhd/`, { params });
+    return { statusCode: response.status, data: response.data };
+  } catch (error) {
+    console.log("console_error", error);
+    return handleError(error);
+  }
+};
+
+export const getStoreData = async (params) => {
+  try {
+    const response = await axiosInstance.get(`/entities/store_analysis/`, { params });
+    return { statusCode: response.status, data: response.data };
+  } catch (error) {
+    console.log("console_error", error);
+    return handleError(error);
+  }
+};

@@ -12,24 +12,26 @@ import {
   Filler,
   Legend,
 } from "chart.js";
-Chart.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Tooltip, Filler, Legend);
-
 import {
   saleRevenue,
   activeSubscription,
-  salesOverview,
-  coinOverview,
-  coinOverviewSet1,
-  coinOverviewSet2,
-  coinOverviewSet3,
   userActivity,
-  orderOverviewSet1,
-  orderOverviewSet2,
-  orderOverviewSet3,
   userActivitySet2,
   userActivitySet3,
   userActivitySet4,
 } from "./Data";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+Chart.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Filler,
+  Legend,
+  
+);
 
 export const BarChart = ({ sales }) => {
   return (
@@ -81,25 +83,24 @@ export const DoubleBar = ({ options, data }) => {
   return <Bar className="chartjs-render-monitor" data={data} options={options} />;
 };
 
-export const HorizontalBarChart = ({ state }) => {
-  const [data, setData] = useState(coinOverview);
-  useEffect(() => {
-    let object;
-    if (state === "day") {
-      object = coinOverviewSet3;
-    } else if (state === "month") {
-      object = coinOverviewSet2;
-    } else {
-      object = coinOverviewSet1;
-    }
-    setData(object);
-  }, [state]);
+export const HorizontalBarChart = ({ data, yScale = false, datalabelsDisplay = false }) => {
   return (
     <Bar
       data={data}
       className="coin-overview-chart"
+      plugins={datalabelsDisplay ? [ChartDataLabels] : []}
       options={{
         plugins: {
+          datalabels: {
+            display: datalabelsDisplay,
+            anchor: "center",
+            align: "center",
+            color: "#000",
+            formatter: (value) => `${value}%`,
+            font: {
+              weight: "bold",
+            },
+          },
           legend: {
             display: false,
           },
@@ -125,7 +126,7 @@ export const HorizontalBarChart = ({ state }) => {
         maintainAspectRatio: false,
         scales: {
           y: {
-            display: false,
+            display: yScale,
             stacked: true,
             ticks: {
               beginAtZero: true,
@@ -133,6 +134,7 @@ export const HorizontalBarChart = ({ state }) => {
             },
             grid: {
               tickMarkLength: 0,
+              display: false,
             },
           },
           x: {
@@ -180,6 +182,7 @@ export const StackedBarChart = ({ state }) => {
           legend: {
             display: false,
           },
+
           tooltip: {
             enabled: true,
             displayColors: false,

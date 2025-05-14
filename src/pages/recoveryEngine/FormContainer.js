@@ -8,12 +8,30 @@ import { FormGroup, Label } from "reactstrap";
 import { RecoveryContext } from "./RecoveryContext";
 import SalesTable from "./SalesTable";
 import RecoveryDataCard from "./RecoveryDataCard";
+import { KEY_NAME } from "./constants";
+import TileBarChart from "./TileBarChart";
+import MixTileChart from "./MixTileChart";
 
 const StyledErrorMessage = styled.span`
   color: #e85347;
   font-size: 11px;
   font-style: italic;
 `;
+
+const getQuarterLabel = (fyqr) => {
+  if (!fyqr) return "";
+
+  const [quarter, year] = fyqr.split("-");
+
+  const quarterMap = {
+    Q1: "April - June",
+    Q2: "July - September",
+    Q3: "October - December",
+    Q4: "January - March",
+  };
+
+  return `${quarterMap[quarter]} ${year}`;
+};
 
 const FormContainer = () => {
   const recoverySchema = Yup.object().shape({
@@ -23,7 +41,6 @@ const FormContainer = () => {
 
   const {
     handleFormSubmit,
-    recoveryData,
     setRecoveryData,
     entityTypesList,
     itemGroupData,
@@ -50,18 +67,24 @@ const FormContainer = () => {
     setSummaryValue,
     setSalesSummaryData,
     setSalesSummaryReportData,
+    tileName,
+    periodList,
+    fetchSalesCompareList,
+    compareList,
+    setGroupValue1,
+    setGroupAttr1,
+    groupAttr2,
+    groupValue2,
+    setGroupAttr2,
+    setGroupValue2,
   } = useContext(RecoveryContext);
 
   const handleSubmitViewDataForm = async (value) => {
     await handleFormSubmit(value);
-    // handleResetForm(setFieldValue, setFieldTouched);
-    // resetForm();
   };
 
   const handleSubmitViewReportDataForm = async (value) => {
     await handleReportSubmit(value);
-    // handleResetForm(setFieldValue, setFieldTouched);
-    // resetForm();
   };
 
   return (
@@ -83,7 +106,10 @@ const FormContainer = () => {
         filter_values_r1: null,
         filter_attr_r2: null,
         filter_values_r2: null,
-        period_filter: null,
+        period_request: { label: "Last Four Months", value: "Last Four Months" },
+        compareData: false,
+        compare_value_1: null,
+        compare_value_2: null,
       }}
       validate={(values) => {
         const errors = {};
@@ -289,6 +315,12 @@ const FormContainer = () => {
                         onChange={(value) => {
                           form.setFieldValue(field.name, value);
                           setFieldValue("group_values_1", null);
+                          if (value?.value) {
+                            setGroupAttr1(value?.value);
+                          } else {
+                            setGroupAttr1(null);
+                          }
+                          setGroupValue1(null);
                           setSalesSummaryData([]);
                           setSalesSummaryReportData([]);
                         }}
@@ -315,6 +347,12 @@ const FormContainer = () => {
                         onChange={(value) => {
                           form.setFieldValue(field.name, value);
                           setFieldValue("group_values_2", null);
+                          setGroupValue2(null);
+                          if (value?.value) {
+                            setGroupAttr2(value?.value);
+                          } else {
+                            setGroupAttr2(null);
+                          }
                           setSalesSummaryData([]);
                           setSalesSummaryReportData([]);
                         }}
@@ -329,7 +367,6 @@ const FormContainer = () => {
             </Col>
             {salesSummaryData.length > 0 && (
               <>
-                {" "}
                 <Col md={12} className="mb-2">
                   <div className="border-bottom mb-3 mt-3" />
                   <h6>Data Set Filters</h6>
@@ -346,6 +383,11 @@ const FormContainer = () => {
                             isClearable
                             onChange={(value) => {
                               form.setFieldValue(field.name, value);
+                              if (value?.value) {
+                                setGroupValue1(value.value);
+                              } else {
+                                setGroupValue1(null);
+                              }
                             }}
                             options={groupValue1Option?.map((item) => ({ label: item, value: item }))}
                             value={field.value}
@@ -369,6 +411,11 @@ const FormContainer = () => {
                             isClearable
                             onChange={(value) => {
                               form.setFieldValue(field.name, value);
+                              if (value?.value) {
+                                setGroupValue2(value.value);
+                              } else {
+                                setGroupValue2(null);
+                              }
                             }}
                             options={groupValue2Option?.map((item) => ({ label: item, value: item }))}
                             value={field.value}
@@ -384,42 +431,183 @@ const FormContainer = () => {
             <Col md={12} className="mb-2">
               <div className="border-bottom mb-3 mt-1" />
             </Col>
+
             <Col md={6}>
               <FormGroup>
-                <Label htmlFor="process_type">Compare Data</Label>
-                <Field name="process_type" className="form-control">
+                <Label htmlFor="period_request">Period</Label>
+                <Field name="period_request" className="form-control">
                   {({ field, form }) => (
                     <>
                       <RSelect
                         {...field}
                         placeholder="Compare Data"
                         isClearable
+                        isDisabled={values.compareData}
                         onChange={(value) => {
                           form.setFieldValue(field.name, value);
                           if (value?.value) {
-                            setCompareValue(value.value);
                             setSalesSummaryReportData([]);
-                          } else {
-                            setCompareValue(null);
                           }
                         }}
-                        options={["Data", "MoM", "QoQ", "YoY"]?.map((item) => ({ label: item, value: item }))}
+                        options={periodList?.map((item) => ({ label: item, value: item }))}
                         value={field.value}
                       />
                     </>
                   )}
                 </Field>
-                <ErrorMessage name="process_type" component={StyledErrorMessage} className="invalid" />
+                <ErrorMessage name="period_request" component={StyledErrorMessage} className="invalid" />
               </FormGroup>
             </Col>
+            {values.period_request.value === "Custom Months" && (
+              <Col md={3}>
+                <FormGroup>
+                  <Label htmlFor="custom_number_of_month">Custom Month</Label>
+                  <Field name="custom_number_of_month" className="form-control">
+                    {({ field, form }) => (
+                      <>
+                        <RSelect
+                          {...field}
+                          placeholder="Custom Month"
+                          isClearable
+                          isDisabled={values.compareData}
+                          onChange={(value) => {
+                            form.setFieldValue(field.name, value);
+                            if (value?.value) {
+                              setSalesSummaryReportData([]);
+                            }
+                          }}
+                          options={Array.from({ length: 24 }, (_, i) => i + 1)?.map((item) => ({
+                            label: item,
+                            value: item,
+                          }))}
+                          value={field.value}
+                        />
+                      </>
+                    )}
+                  </Field>
+                  <ErrorMessage name="period_request" component={StyledErrorMessage} className="invalid" />
+                </FormGroup>
+              </Col>
+            )}
             <Col md={3}>
-              <FormGroup>
-                <Label htmlFor="period_filter">Period</Label>
-                <Field name="period_filter" className="form-control" />
-                <ErrorMessage name="period_filter" component={StyledErrorMessage} className="invalid" />
+              <FormGroup className="custom-control-group h-100 mt-1">
+                <Field name="compareData" className="form-control">
+                  {({ field, form }) => (
+                    <>
+                      <div className="custom-control custom-control-sm custom-checkbox custom-control-pro">
+                        <input
+                          type="checkbox"
+                          className="custom-control-input"
+                          name="btnCheckControl"
+                          id="btnCheckControl1"
+                          value={field.value}
+                          onChange={(e) => {
+                            form.setFieldValue(field.name, e.target.checked);
+                            setRecoveryData(e.target.checked);
+                            if (!e.target.checked) {
+                              form.setFieldValue("process_type", null);
+                              form.setFieldValue("compare_value_1", null);
+                              form.setFieldValue("compare_value_2", null);
+                            }
+                          }}
+                        ></input>
+                        <label
+                          className="custom-control-label"
+                          for="btnCheckControl1"
+                          style={{ padding: "7px 18px 7px 38px" }}
+                        >
+                          Compare Data
+                        </label>
+                      </div>
+                    </>
+                  )}
+                </Field>
               </FormGroup>
             </Col>
-            <Col md={3}>
+            {values.compareData && (
+              <>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label htmlFor="process_type">Compare Data</Label>
+                    <Field name="process_type" className="form-control">
+                      {({ field, form }) => (
+                        <>
+                          <RSelect
+                            {...field}
+                            placeholder="Compare Data"
+                            isClearable
+                            onChange={(value) => {
+                              form.setFieldValue(field.name, value);
+                              if (value?.value) {
+                                setCompareValue(value.value);
+                                fetchSalesCompareList(value.value);
+                                setSalesSummaryReportData([]);
+                              } else {
+                                setCompareValue(null);
+                              }
+                            }}
+                            options={["MoM", "QoQ", "YoY"]?.map((item) => ({ label: item, value: item }))}
+                            value={field.value}
+                          />
+                        </>
+                      )}
+                    </Field>
+                    <ErrorMessage name="process_type" component={StyledErrorMessage} className="invalid" />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label htmlFor="compare_value_1">Compare Value 1</Label>
+                    <Field name="compare_value_1" className="form-control">
+                      {({ field, form }) => (
+                        <>
+                          <RSelect
+                            {...field}
+                            placeholder="Compare Value 1"
+                            isClearable
+                            onChange={(value) => {
+                              form.setFieldValue(field.name, value);
+                            }}
+                            options={compareList?.map((item) => ({
+                              label: values?.process_type?.value === "QoQ" ? getQuarterLabel(item) : item,
+                              value: item,
+                            }))}
+                            value={field.value}
+                          />
+                        </>
+                      )}
+                    </Field>
+                    <ErrorMessage name="compare_value_1" component={StyledErrorMessage} className="invalid" />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label htmlFor="compare_value_2">Compare Value 2</Label>
+                    <Field name="compare_value_2" className="form-control">
+                      {({ field, form }) => (
+                        <>
+                          <RSelect
+                            {...field}
+                            placeholder="Compare Value 2"
+                            isClearable
+                            onChange={(value) => {
+                              form.setFieldValue(field.name, value);
+                            }}
+                            options={compareList?.map((item) => ({
+                              label: values?.process_type?.value === "QoQ" ? getQuarterLabel(item) : item,
+                              value: item,
+                            }))}
+                            value={field.value}
+                          />
+                        </>
+                      )}
+                    </Field>
+                    <ErrorMessage name="compare_value_2" component={StyledErrorMessage} className="invalid" />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+            <Col md={12} className="mt-3">
               <ul className="align-end h-100 justify-content-end flex-wrap flex-sm-nowrap gx-4 gy-2">
                 <li>
                   <Button
@@ -433,37 +621,6 @@ const FormContainer = () => {
                     View Data
                   </Button>
                 </li>
-                {/* <li className="custom-control-group">
-                  <Field name="compareData" className="form-control">
-                    {({ field, form }) => (
-                      <>
-                        <div className="custom-control custom-control-sm custom-checkbox custom-control-pro">
-                          <input
-                            disabled={recoveryData.length === 0}
-                            type="checkbox"
-                            className="custom-control-input"
-                            name="btnCheckControl"
-                            id="btnCheckControl1"
-                            value={field.value}
-                            onChange={(e) => {
-                              form.setFieldValue(field.name, e.target.checked);
-                              if (!e.target.checked) {
-                                setRecoveryData([recoveryData[0]]);
-                              }
-                            }}
-                          ></input>
-                          <label
-                            className="custom-control-label"
-                            for="btnCheckControl1"
-                            style={{ padding: "7px 18px 7px 38px" }}
-                          >
-                            Compare Data
-                          </label>
-                        </div>
-                      </>
-                    )}
-                  </Field>
-                </li> */}
               </ul>
             </Col>
             {salesSummaryData.length > 0 ? (
@@ -478,6 +635,7 @@ const FormContainer = () => {
                     value1={tileData.TAIM.toFixed(2)}
                     subtitle2="Qty"
                     value2={tileData.TOTQ}
+                    name={KEY_NAME.KEY_1}
                   />
                 </Col>
                 <Col md={3} className="mt-2">
@@ -487,6 +645,8 @@ const FormContainer = () => {
                     value1={tileData.TAND.toFixed(2)}
                     subtitle2="Qty"
                     value2={tileData.TQND}
+                    name={KEY_NAME.KEY_2}
+                    monthlyAvg={tileData.avgAAND}
                   />
                 </Col>
                 <Col md={3} className="mt-2">
@@ -496,6 +656,8 @@ const FormContainer = () => {
                     value1={tileData.TAWD.toFixed(2)}
                     subtitle2="Qty"
                     value2={tileData.TQWD}
+                    name={KEY_NAME.KEY_3}
+                    monthlyAvg={tileData.avgAAWD}
                   />
                 </Col>
                 <Col md={3} className="mt-2">
@@ -505,8 +667,21 @@ const FormContainer = () => {
                     value1={tileData.INVC.toFixed(2)}
                     subtitle2="Ave disc/ Invoice"
                     value2={Number(tileData.avgDisc).toFixed(2)}
+                    name={KEY_NAME.KEY_4}
+                    monthlyAvg={tileData.avgADIS}
                   />
                 </Col>
+
+                {tileName && (
+                  <>
+                    <TileBarChart />
+                  </>
+                )}
+                {!tileName && values.compareData && (
+                  <>
+                    <MixTileChart />
+                  </>
+                )}
 
                 <Col md={12} className="mb-2">
                   <div className="border-bottom mb-3 mt-3" />
